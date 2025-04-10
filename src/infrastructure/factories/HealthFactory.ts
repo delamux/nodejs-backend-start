@@ -1,16 +1,16 @@
 import { Routes } from '../routes';
-import { Request, Response } from 'express';
+import { Request, Response, Router } from 'express';
 import { AbstractFactory, RouterCreator } from './AbstractFactory';
 
 export class HealthFactory extends AbstractFactory {
-  public static createRouter(createRouter: RouterCreator) {
+  public static createRouter(createRouter: RouterCreator): Router {
     const router = createRouter();
     router.get(Routes.status, this.requestHandler);
 
     return router;
   }
 
-  private static requestHandler(req: Request, res: Response) {
+  private static requestHandler(req: Request, res: Response): void {
     res.status(200).json({ status: 'OK' });
   }
 }

@@ -1,4 +1,4 @@
-import express, { Express, Request, Response, Router } from 'express';
+import express, { Express, Router } from 'express';
 
 export function createServer(router: Router): Express {
   const server = express();
