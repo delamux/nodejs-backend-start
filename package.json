@@ -10,7 +10,7 @@
     "test:unit": "vitest run --config vitest.config.unit.ts",
     "test:integration": "vitest run --config vitest.config.integration.ts",
     "test": "npm run test:integration && npm run test:unit",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "npm run lint -- --fix",
     "prettify": "prettier \"./**/*.{js,jsx,json,css,ts,tsx}\" --write"
   },
