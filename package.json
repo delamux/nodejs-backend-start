@@ -1,0 +1,50 @@
+{
+  "name": "nodejs-backend-start",
+  "version": "1.0.0",
+  "description": "Start backend in nodejs",
+  "main": "index.js",
+  "scripts": {
+    "start": "dotenvx run -- node dist/main.js",
+    "dev": "dotenvx run -- tsx watch",
+    "build": "tsc",
+    "test:unit": "vitest run --config vitest.config.unit.ts",
+    "test:integration": "vitest run --config vitest.config.integration.ts",
+    "test": "npm run test:integration && npm run test:unit",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "prettify": "prettier \"./**/*.{js,jsx,json,css,ts,tsx}\" --write"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/delamux/nodejs-backend-start.git"
+  },
+  "keywords": [
+    "backend",
+    "nodejs",
+    "vitest",
+    "start",
+    "express",
+    "skeleton"
+  ],
+  "author": "Luis del Amo",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/delamux/nodejs-backend-start/issues"
+  },
+  "homepage": "https://github.com/delamux/nodejs-backend-start#readme",
+  "dependencies": {
+    "@dotenvx/dotenvx": "^1.39.1",
+    "express": "^5.0.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.1",
+    "@types/node": "^22.14.0",
+    "@typescript-eslint/eslint-plugin": "^8.29.1",
+    "@typescript-eslint/parser": "^8.29.1",
+    "eslint": "^9.24.0",
+    "prettier": "^3.5.3",
+    "supertest": "^7.1.0",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.3",
+    "vitest": "^3.1.1"
+  }
+}
