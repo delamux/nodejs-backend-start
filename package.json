@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "dotenvx run -- node dist/main.js",
-    "dev": "dotenvx run -- tsx watch",
+    "dev": "dotenvx run -- tsx watch src/main.ts",
     "build": "tsc",
     "test:unit": "vitest run --config vitest.config.unit.ts",
     "test:integration": "vitest run --config vitest.config.integration.ts",

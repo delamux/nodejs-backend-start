@@ -1,13 +1,13 @@
 import request from 'supertest';
 import { Routes } from '../../infrastructure/routes';
-import { Factory } from '../../infrastructure/factory';
 import { Express } from 'express';
 import { beforeEach, describe, it, expect } from 'vitest';
+import { AppFactory } from '../../infrastructure/AppFactory';
 
 describe('The Server', () => {
   let server: Express;
   beforeEach(() => {
-    server = Factory.createServer();
+    server = AppFactory.createServer();
   });
 
   it('works', async () => {
