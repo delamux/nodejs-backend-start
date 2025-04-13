@@ -1,9 +1,15 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { Routes } from '../../../../infrastructure/routes';
-import { NextFunction, type Request } from 'express';
-import { UserRequestDto } from '../../../../application/user/userRequest.dto';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { NextFunction } from 'express';
 import { HttpResponse } from '../../../../infrastructure/http';
 import { MockInstance } from '@vitest/spy';
+import {
+  AuthenticatedRequest,
+  Method,
+  Permission,
+  rbacUserMiddleware,
+  UserRoles,
+} from '../../../../infrastructure/middlewares/rbacUser.middleware';
+
 /*
  * IMPORTANT:
  * This is an example configuration file. Copy this file into your config directory and edit to
@@ -26,58 +32,6 @@ import { MockInstance } from '@vitest/spy';
  *
  * Example, using allowed callable to define permissions only for
  */
-const ALLOW_ALL = '*';
-
-enum Method {
-  ALL = ALLOW_ALL,
-  GET = 'get',
-  POST = 'post',
-  PUT = 'put',
-  DELETE = 'delete',
-}
-
-enum UserRoles {
-  ADMIN = 'admin',
-  USER = 'user',
-}
-
-type Permission = {
-  role: UserRoles;
-  path: Routes;
-  method: Method;
-  allowed: boolean | ((user: UserRequestDto, role: UserRoles, request: Request) => boolean);
-};
-
-interface AuthenticatedRequest extends Request {
-  user?: UserRequestDto;
-}
-
-const rbacUserMiddleware =
-  (permissions: Permission[]) =>
-  (
-    req: AuthenticatedRequest,
-    res: HttpResponse<Record<string, unknown>>,
-    next: NextFunction
-  ): HttpResponse<Record<string, unknown>> | void => {
-    const user = req?.user;
-    if (!user) {
-      return res.status(403).json({ message: 'Forbidden' });
-    }
-    const role = user.role;
-
-    const permission = permissions.find(
-      perm =>
-        (perm.role === role || perm.role === UserRoles.ADMIN) &&
-        (perm.path === req.path || perm.path === ALLOW_ALL) &&
-        (perm.method === req.method.toLowerCase() || perm.method === Method.ALL)
-    );
-
-    if (permission && permission.allowed) {
-      next();
-    } else {
-      res.status(403).json({ message: 'Forbidden' });
-    }
-  };
 
 describe('rbacUserMiddleware test', () => {
   let status: MockInstance;
