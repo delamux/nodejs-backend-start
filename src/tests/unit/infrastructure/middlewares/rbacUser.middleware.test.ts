@@ -2,13 +2,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { NextFunction } from 'express';
 import { HttpResponse } from '../../../../infrastructure/http';
 import { MockInstance } from '@vitest/spy';
-import {
-  AuthenticatedRequest,
-  Method,
-  Permission,
-  rbacUserMiddleware,
-  UserRoles,
-} from '../../../../infrastructure/middlewares/rbacUser.middleware';
+import { AuthenticatedRequest, rbacUserMiddleware } from '../../../../infrastructure/middlewares/rbacUser.middleware';
+import { Method, Permission, UserRoles } from '../../../../infrastructure/permissions';
 
 /*
  * IMPORTANT:
