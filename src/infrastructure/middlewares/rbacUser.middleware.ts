@@ -50,11 +50,17 @@ export const rbacUserMiddleware =
     const permission = permissions.find(perm => {
       const isRoleMatch = perm.role === role || perm.role === ALLOW_ALL;
       const isMethodMatch = perm.method === req.method || perm.method === ALLOW_ALL;
-      const isUrlMatch = perm.baseUrl === req.baseUrl || perm.baseUrl === ALLOW_ALL;
+      const isUrlMatch =
+        (typeof perm.baseUrl === 'string' && (perm.baseUrl === req.baseUrl || perm.baseUrl === ALLOW_ALL)) ||
+        (Array.isArray(perm.baseUrl) && perm.baseUrl.some(url => req.baseUrl === url));
       const isActionMatch = perm?.action === req.path || perm?.action === ALLOW_ALL || perm?.action === undefined;
 
       return isRoleMatch && isMethodMatch && isUrlMatch && isActionMatch;
     });
+
+    if (permission === undefined) {
+      return handleForbiddenResponse(res);
+    }
 
     if (permission && typeof permission.allowed === 'function') {
       const isAllowed = permission.allowed(user, req);

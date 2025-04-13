@@ -81,6 +81,41 @@ describe('rbacUserMiddleware test', () => {
     expect(next).toBeCalledTimes(1);
   });
 
+  it('should call next for existing user with permission with arrays of paths', () => {
+    const testPath1 = '/test';
+    const testPath2 = '/test2';
+    const testPath3 = '/test3';
+    const testPath4 = '/test4';
+    const permissions: Permission[] = [
+      { role: UserRoles.USER, method: Method.GET, baseUrl: [testPath1, testPath2, testPath3], allowed: true },
+    ];
+    const req = {
+      baseUrl: testPath1,
+      method: Method.GET,
+      user: {
+        email: 'no-relevant',
+        role: UserRoles.USER,
+      },
+    } as AuthenticatedRequest;
+
+    const middleware = rbacUserMiddleware(permissions);
+
+    middleware(req, res, next);
+    expect(next).toHaveBeenCalled();
+    req.baseUrl = testPath2;
+    rbacUserMiddleware(permissions)(req, res, next);
+    expect(next).toHaveBeenCalled();
+    req.baseUrl = testPath3;
+    rbacUserMiddleware(permissions)(req, res, next);
+    expect(next).toHaveBeenCalled();
+    // Not existed path in permissions
+    req.baseUrl = testPath4;
+    rbacUserMiddleware(permissions)(req, res, next);
+    expect(status).toHaveBeenCalledWith(403);
+    expect(json).toHaveBeenCalledWith({ message: 'Forbidden' });
+    expect(next).toBeCalledTimes(3);
+  });
+
   it('Is super user then it will call next method', () => {
     const testPath = '/test';
     const permissions: Permission[] = [{ role: UserRoles.USER, method: Method.GET, baseUrl: testPath, allowed: true }];
