@@ -84,7 +84,7 @@ describe('rbacUserMiddleware test', () => {
 
     const req = {
       path: '/test',
-      method: 'GET',
+      method: Method.GET,
     } as AuthenticatedRequest;
 
     const status = vi.fn().mockReturnThis();
@@ -103,5 +103,31 @@ describe('rbacUserMiddleware test', () => {
     expect(status).toHaveBeenCalledWith(403);
     expect(json).toHaveBeenCalledWith({ message: 'Forbidden' });
     expect(next).not.toHaveBeenCalled();
+  });
+
+  it('should call next for existing user with permission', () => {
+    const testPath = '/test';
+    const permissions: Permission[] = [{ role: UserRoles.USER, method: Method.GET, path: testPath, allowed: true }];
+    const next = vi.fn() as NextFunction;
+    const req = {
+      path: testPath,
+      method: Method.GET,
+      user: {
+        email: 'no-relevant',
+        role: UserRoles.USER,
+      },
+    } as AuthenticatedRequest;
+
+    const middleware = rbacUserMiddleware(permissions);
+    const status = vi.fn().mockReturnThis();
+    const json = vi.fn();
+    const res = {
+      status,
+      json,
+    } as unknown as HttpResponse<Record<string, unknown>>;
+
+    middleware(req, res, next);
+
+    expect(next).toBeCalledTimes(1);
   });
 });
