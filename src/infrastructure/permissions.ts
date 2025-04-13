@@ -30,7 +30,13 @@ export type Permission = {
 export const permissions: Permission[] = [
   {
     role: UserRoles.ALL,
-    path: '',
+    path: '/',
+    method: Method.GET,
+    bypassAuth: true,
+  },
+  {
+    role: UserRoles.ALL,
+    path: '/status',
     method: Method.GET,
     bypassAuth: true,
   },
