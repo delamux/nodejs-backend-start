@@ -166,4 +166,52 @@ describe('rbacUserMiddleware test', () => {
     expect(json).toHaveBeenCalledWith({ message: 'You are not allowed for this action' });
     expect(next).not.toHaveBeenCalled();
   });
+
+  it('should return next method when method is inside the array of permissions', () => {
+    const testPath = '/test';
+    const req = {
+      path: testPath,
+      method: Method.PUT,
+      user: {
+        role: UserRoles.USER,
+      },
+    } as unknown as AuthenticatedRequest;
+    const permissions: Permission[] = [
+      {
+        role: UserRoles.USER,
+        method: [Method.PUT, Method.GET],
+        path: testPath,
+        allowed: true,
+      },
+    ];
+
+    const middleware = rbacUserMiddleware(permissions);
+    middleware(req, res, next);
+    expect(next).toHaveBeenCalledTimes(1);
+  });
+
+  it('should return not allowed action for a method not in permissions', () => {
+    const testPath = '/test';
+    const req = {
+      path: testPath,
+      method: Method.POST,
+      user: {
+        role: UserRoles.USER,
+      },
+    } as unknown as AuthenticatedRequest;
+    const permissions: Permission[] = [
+      {
+        role: UserRoles.USER,
+        method: [Method.PUT, Method.GET],
+        path: testPath,
+        allowed: true,
+      },
+    ];
+
+    const middleware = rbacUserMiddleware(permissions);
+    middleware(req, res, next);
+    expect(status).toHaveBeenCalledWith(403);
+    expect(json).toHaveBeenCalledWith({ message: 'You are not allowed for this action' });
+    expect(next).not.toHaveBeenCalled();
+  });
 });
