@@ -19,6 +19,7 @@ describe('rbacUserMiddleware test', () => {
     } as unknown as HttpResponse<Record<string, unknown>>;
     next = vi.fn() as NextFunction;
   });
+
   it('should return Forbidden message for not existing user on request', () => {
     const permissions: Permission[] = [{ role: UserRoles.USER, method: Method.GET, path: '/test', allowed: true }];
 
@@ -97,6 +98,26 @@ describe('rbacUserMiddleware test', () => {
         role: UserRoles.USER,
         email: 'no-relevant',
         isSuperUser: true,
+      },
+    } as AuthenticatedRequest;
+
+    const middleware = rbacUserMiddleware(permissions);
+    middleware(req, res, next);
+
+    expect(next).toBeCalledTimes(1);
+  });
+
+  it('Should call next method when is bypassAuth true', () => {
+    const testPath = '/test';
+    const permissions: Permission[] = [
+      { role: 'no-relevant' as UserRoles, method: Method.GET, path: testPath, bypassAuth: true },
+    ];
+    const req = {
+      path: testPath,
+      method: Method.GET,
+      user: {
+        role: 'no-relevant' as UserRoles,
+        email: 'no-relevant',
       },
     } as AuthenticatedRequest;
 
