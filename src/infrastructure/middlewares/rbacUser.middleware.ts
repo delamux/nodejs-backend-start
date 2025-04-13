@@ -19,7 +19,7 @@ export const rbacUserMiddleware =
       const byPassAuth = permission?.bypassAuth !== undefined && permission?.bypassAuth === true;
 
       if (isUrlMatch && isMethodMatch && byPassAuth) {
-        return next();
+        return true;
       }
 
       return isRoleMatch && isMethodMatch && isUrlMatch;
@@ -27,6 +27,10 @@ export const rbacUserMiddleware =
 
     if (permissionFound === undefined) {
       return handleForbiddenResponse(res);
+    }
+
+    if (permissionFound.bypassAuth === true) {
+      return next();
     }
 
     if (!user) {
