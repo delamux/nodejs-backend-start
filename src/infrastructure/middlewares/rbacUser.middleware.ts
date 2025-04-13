@@ -16,8 +16,8 @@ export const rbacUserMiddleware =
       const isRoleMatch = perm.role === userRole || perm.role === ALLOW_ALL;
       const isMethodMatch = perm.method === req.method || perm.method === ALLOW_ALL;
       const isUrlMatch =
-        (typeof perm.baseUrl === 'string' && (perm.baseUrl === req.baseUrl || perm.baseUrl === ALLOW_ALL)) ||
-        (Array.isArray(perm.baseUrl) && perm.baseUrl.some(url => req.baseUrl === url));
+        (typeof perm.path === 'string' && (perm.path === req.path || perm.path === ALLOW_ALL)) ||
+        (Array.isArray(perm.path) && perm.path.some(url => req.path === url));
       const byPassAuth = perm?.bypassAuth !== undefined && perm?.bypassAuth === true;
 
       if (isUrlMatch && isMethodMatch && byPassAuth) {
@@ -29,15 +29,15 @@ export const rbacUserMiddleware =
       return isRoleMatch && isMethodMatch && isUrlMatch && isActionMatch;
     });
 
+    if (permission === undefined) {
+      return handleForbiddenResponse(res);
+    }
+
     if (!user) {
       return handleForbiddenResponse(res);
     }
     if (user?.isSuperUser === true) {
       return next();
-    }
-
-    if (permission === undefined) {
-      return handleForbiddenResponse(res);
     }
 
     if (permission && typeof permission.allowed === 'function') {

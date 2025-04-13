@@ -20,7 +20,7 @@ export enum UserRoles {
 
 export type Permission = {
   role: UserRoles;
-  baseUrl: Routes;
+  path: Routes;
   method: Method;
   action?: string | undefined;
   bypassAuth?: boolean;
@@ -30,13 +30,13 @@ export type Permission = {
 export const permissions: Permission[] = [
   {
     role: UserRoles.ALL,
-    baseUrl: '',
+    path: '',
     method: Method.GET,
     bypassAuth: true,
   },
   {
     role: UserRoles.ADMIN,
-    baseUrl: '/admin',
+    path: '/admin',
     method: Method.GET,
     allowed: true,
   },
