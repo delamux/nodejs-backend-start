@@ -1,8 +1,9 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { Routes } from '../../../../infrastructure/routes';
 import { NextFunction, type Request } from 'express';
 import { UserRequestDto } from '../../../../application/user/userRequest.dto';
 import { HttpResponse } from '../../../../infrastructure/http';
+import { MockInstance } from '@vitest/spy';
 /*
  * IMPORTANT:
  * This is an example configuration file. Copy this file into your config directory and edit to
@@ -79,6 +80,19 @@ const rbacUserMiddleware =
   };
 
 describe('rbacUserMiddleware test', () => {
+  let status: MockInstance;
+  let json: MockInstance;
+  let res: HttpResponse<Record<string, unknown>>;
+  let next: NextFunction;
+  beforeEach(() => {
+    status = vi.fn().mockReturnThis();
+    json = vi.fn();
+    res = {
+      status,
+      json,
+    } as unknown as HttpResponse<Record<string, unknown>>;
+    next = vi.fn() as NextFunction;
+  });
   it('should return Forbidden message for not existing user on request', () => {
     const permissions: Permission[] = [{ role: UserRoles.USER, method: Method.GET, path: '/test', allowed: true }];
 
@@ -86,16 +100,6 @@ describe('rbacUserMiddleware test', () => {
       path: '/test',
       method: Method.GET,
     } as AuthenticatedRequest;
-
-    const status = vi.fn().mockReturnThis();
-    const json = vi.fn();
-
-    const res = {
-      status,
-      json,
-    } as unknown as HttpResponse<Record<string, unknown>>;
-
-    const next = vi.fn() as NextFunction;
 
     const middleware = rbacUserMiddleware(permissions);
     middleware(req, res, next);
@@ -108,7 +112,6 @@ describe('rbacUserMiddleware test', () => {
   it('should call next for existing user with permission', () => {
     const testPath = '/test';
     const permissions: Permission[] = [{ role: UserRoles.USER, method: Method.GET, path: testPath, allowed: true }];
-    const next = vi.fn() as NextFunction;
     const req = {
       path: testPath,
       method: Method.GET,
@@ -119,13 +122,6 @@ describe('rbacUserMiddleware test', () => {
     } as AuthenticatedRequest;
 
     const middleware = rbacUserMiddleware(permissions);
-    const status = vi.fn().mockReturnThis();
-    const json = vi.fn();
-    const res = {
-      status,
-      json,
-    } as unknown as HttpResponse<Record<string, unknown>>;
-
     middleware(req, res, next);
 
     expect(next).toBeCalledTimes(1);
