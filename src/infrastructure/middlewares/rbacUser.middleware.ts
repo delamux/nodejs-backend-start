@@ -40,6 +40,9 @@ export const rbacUserMiddleware =
     if (!user) {
       return res.status(403).json({ message: 'Forbidden' });
     }
+    if (user?.isSuperUser === true) {
+      return next();
+    }
     const role = user.role;
 
     const permission = permissions.find(
@@ -50,8 +53,8 @@ export const rbacUserMiddleware =
     );
 
     if (permission && permission.allowed) {
-      next();
-    } else {
-      res.status(403).json({ message: 'Forbidden' });
+      return next();
     }
+
+    return res.status(403).json({ message: 'Forbidden' });
   };

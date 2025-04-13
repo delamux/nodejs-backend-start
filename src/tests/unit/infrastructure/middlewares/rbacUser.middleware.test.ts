@@ -80,4 +80,22 @@ describe('rbacUserMiddleware test', () => {
 
     expect(next).toBeCalledTimes(1);
   });
+
+  it('Is super user then it will call next method', () => {
+    const testPath = '/test';
+    const permissions: Permission[] = [{ role: UserRoles.USER, method: Method.GET, path: testPath, allowed: true }];
+    const req = {
+      path: testPath,
+      method: Method.GET,
+      user: {
+        email: 'no-relevant',
+        isSuperUser: true,
+      },
+    } as AuthenticatedRequest;
+
+    const middleware = rbacUserMiddleware(permissions);
+    middleware(req, res, next);
+
+    expect(next).toBeCalledTimes(1);
+  });
 });
