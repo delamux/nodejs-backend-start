@@ -5,29 +5,6 @@ import { MockInstance } from '@vitest/spy';
 import { AuthenticatedRequest, rbacUserMiddleware } from '../../../../infrastructure/middlewares/rbacUser.middleware';
 import { Method, Permission, UserRoles } from '../../../../infrastructure/permissions';
 
-/*
- * IMPORTANT:
- * This is an example configuration file. Copy this file into your config directory and edit to
- * setup your app permissions.
- *
- * This is a quick roles-permissions implementation
- * Rules are evaluated top-down, first matching rule will apply
- * Each line define
- *      [
- *          'role' => 'role' | ['roles'] | '*'
- *          'path' => 'Controller' | ['Controllers'] | '*',
- *          'method' => 'get' | ['Controllers'] | '*',
- *          'action' => 'action' | ['actions'] | '*',
- *          'allowed' => true | false | callback (default = true)
- *      ]
- * You could use '*' to match anything
- * 'allowed' will be considered true if not defined. It allows a callable to manage complex
- * permissions, like this
- * 'allowed' => function (array $user, $role, Request $request) {}
- *
- * Example, using allowed callable to define permissions only for
- */
-
 describe('rbacUserMiddleware test', () => {
   let status: MockInstance;
   let json: MockInstance;
