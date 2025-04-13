@@ -24,7 +24,6 @@ export type Permission = {
   role: UserRoles;
   path: Path;
   method: Method | Method[];
-  action?: string | undefined;
   bypassAuth?: boolean;
   allowed?: boolean | ((user: UserRequestDto, request: Request) => boolean);
 };
