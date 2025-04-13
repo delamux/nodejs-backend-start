@@ -22,10 +22,7 @@ export const rbacUserMiddleware =
         return next();
       }
 
-      const isActionMatch =
-        permission?.action === req.path || permission?.action === ALLOW_ALL || permission?.action === undefined;
-
-      return isRoleMatch && isMethodMatch && isUrlMatch && isActionMatch;
+      return isRoleMatch && isMethodMatch && isUrlMatch;
     });
 
     if (permissionFound === undefined) {
