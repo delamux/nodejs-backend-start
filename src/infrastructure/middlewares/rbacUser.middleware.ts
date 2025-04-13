@@ -22,7 +22,7 @@ export type Permission = {
   role: UserRoles;
   path: Routes;
   method: Method;
-  allowed: boolean | ((user: UserRequestDto, role: UserRoles, request: Request) => boolean);
+  allowed: boolean | ((user: UserRequestDto, request: Request) => boolean);
 };
 
 export interface AuthenticatedRequest extends Request {
@@ -38,7 +38,7 @@ export const rbacUserMiddleware =
   ): HttpResponse<Record<string, unknown>> | void => {
     const user = req?.user;
     if (!user) {
-      return res.status(403).json({ message: 'Forbidden' });
+      return handleForbiddenResponse(res);
     }
     if (user?.isSuperUser === true) {
       return next();
@@ -48,13 +48,25 @@ export const rbacUserMiddleware =
     const permission = permissions.find(
       perm =>
         (perm.role === role || perm.role === UserRoles.ADMIN) &&
-        (perm.path === req.path || perm.path === ALLOW_ALL) &&
-        (perm.method === req.method.toLowerCase() || perm.method === Method.ALL)
+        (perm.method === req.method.toLowerCase() || perm.method === Method.ALL) &&
+        (perm.path === req.path || perm.path === ALLOW_ALL)
     );
 
-    if (permission && permission.allowed) {
+    if (permission && typeof permission.allowed === 'function') {
+      const isAllowed = permission.allowed(user, req);
+      if (!isAllowed) {
+        return handleForbiddenResponse(res);
+      }
       return next();
     }
 
-    return res.status(403).json({ message: 'Forbidden' });
+    if (permission.allowed === true) {
+      return next();
+    }
+
+    return handleForbiddenResponse(res);
   };
+
+function handleForbiddenResponse(res: HttpResponse<Record<string, unknown>>): HttpResponse<Record<string, unknown>> {
+  return res.status(403).json({ message: 'Forbidden' });
+}
