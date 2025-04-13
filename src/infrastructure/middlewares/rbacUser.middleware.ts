@@ -12,24 +12,23 @@ export const rbacUserMiddleware =
   (req: AuthenticatedRequest, res: HttpResponse<Record<string, unknown>>, next: NextFunction): void => {
     const user = req?.user;
     const userRole = user?.role;
-    const permission = permissions.find(perm => {
-      const isRoleMatch = perm.role === userRole || perm.role === ALLOW_ALL;
-      const isMethodMatch = perm.method === req.method || perm.method === ALLOW_ALL;
-      const isUrlMatch =
-        (typeof perm.path === 'string' && (perm.path === req.path || perm.path === ALLOW_ALL)) ||
-        (Array.isArray(perm.path) && perm.path.some(url => req.path === url));
-      const byPassAuth = perm?.bypassAuth !== undefined && perm?.bypassAuth === true;
+    const permissionFound = permissions.find(permission => {
+      const isRoleMatch = permission.role === userRole || permission.role === ALLOW_ALL;
+      const isMethodMatch = permission.method === req.method || permission.method === ALLOW_ALL;
+      const isUrlMatch = hasUrlMatched(permission, req);
+      const byPassAuth = permission?.bypassAuth !== undefined && permission?.bypassAuth === true;
 
       if (isUrlMatch && isMethodMatch && byPassAuth) {
         return next();
       }
 
-      const isActionMatch = perm?.action === req.path || perm?.action === ALLOW_ALL || perm?.action === undefined;
+      const isActionMatch =
+        permission?.action === req.path || permission?.action === ALLOW_ALL || permission?.action === undefined;
 
       return isRoleMatch && isMethodMatch && isUrlMatch && isActionMatch;
     });
 
-    if (permission === undefined) {
+    if (permissionFound === undefined) {
       return handleForbiddenResponse(res);
     }
 
@@ -40,20 +39,29 @@ export const rbacUserMiddleware =
       return next();
     }
 
-    if (permission && typeof permission.allowed === 'function') {
-      const isAllowed = permission.allowed(user, req);
+    if (permissionFound && typeof permissionFound.allowed === 'function') {
+      const isAllowed = permissionFound.allowed(user, req);
       if (!isAllowed) {
         return handleForbiddenResponse(res);
       }
       return next();
     }
 
-    if (permission.allowed === true) {
+    if (permissionFound.allowed === true) {
       return next();
     }
 
     return handleForbiddenResponse(res);
   };
+
+function hasUrlMatched(permissions: Permission, req: AuthenticatedRequest): boolean {
+  const isStringPath =
+    typeof permissions.path === 'string' && (permissions.path === req.path || permissions.path === ALLOW_ALL);
+
+  const isPathIncluded = Array.isArray(permissions.path) && permissions.path.some(url => req.path === url);
+
+  return isStringPath || isPathIncluded;
+}
 
 function handleForbiddenResponse(res: HttpResponse<Record<string, unknown>>): void {
   res.status(403).json({ message: 'You are not allowed for this action' });
