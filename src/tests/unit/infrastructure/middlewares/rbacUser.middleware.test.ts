@@ -48,10 +48,10 @@ describe('rbacUserMiddleware test', () => {
     next = vi.fn() as NextFunction;
   });
   it('should return Forbidden message for not existing user on request', () => {
-    const permissions: Permission[] = [{ role: UserRoles.USER, method: Method.GET, path: '/test', allowed: true }];
+    const permissions: Permission[] = [{ role: UserRoles.USER, method: Method.GET, baseUrl: '/test', allowed: true }];
 
     const req = {
-      path: '/test',
+      baseUrl: '/test',
       method: Method.GET,
     } as AuthenticatedRequest;
 
@@ -65,9 +65,9 @@ describe('rbacUserMiddleware test', () => {
 
   it('should call next for existing user with permission', () => {
     const testPath = '/test';
-    const permissions: Permission[] = [{ role: UserRoles.USER, method: Method.GET, path: testPath, allowed: true }];
+    const permissions: Permission[] = [{ role: UserRoles.USER, method: Method.GET, baseUrl: testPath, allowed: true }];
     const req = {
-      path: testPath,
+      baseUrl: testPath,
       method: Method.GET,
       user: {
         email: 'no-relevant',
@@ -83,9 +83,9 @@ describe('rbacUserMiddleware test', () => {
 
   it('Is super user then it will call next method', () => {
     const testPath = '/test';
-    const permissions: Permission[] = [{ role: UserRoles.USER, method: Method.GET, path: testPath, allowed: true }];
+    const permissions: Permission[] = [{ role: UserRoles.USER, method: Method.GET, baseUrl: testPath, allowed: true }];
     const req = {
-      path: testPath,
+      baseUrl: testPath,
       method: Method.GET,
       user: {
         email: 'no-relevant',
@@ -102,7 +102,7 @@ describe('rbacUserMiddleware test', () => {
   it('should return forbidden as Is Admin, but can not edit other user profile, should find the not allowed permissions first', () => {
     const testPath = '/test/2';
     const req = {
-      path: testPath,
+      baseUrl: testPath,
       method: Method.PUT,
       params: {
         id: '2',
@@ -118,7 +118,7 @@ describe('rbacUserMiddleware test', () => {
       {
         role: UserRoles.ADMIN,
         method: Method.PUT,
-        path: testPath,
+        baseUrl: testPath,
         allowed: (user, req): boolean => {
           return user.id === req.params.id;
         },
@@ -126,7 +126,7 @@ describe('rbacUserMiddleware test', () => {
       {
         role: UserRoles.ADMIN,
         method: Method.ALL,
-        path: testPath,
+        baseUrl: testPath,
         allowed: true,
       },
     ];

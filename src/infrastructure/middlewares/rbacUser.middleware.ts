@@ -20,7 +20,7 @@ export enum UserRoles {
 
 export type Permission = {
   role: UserRoles;
-  path: Routes;
+  baseUrl: Routes;
   method: Method;
   allowed: boolean | ((user: UserRequestDto, request: Request) => boolean);
 };
@@ -49,7 +49,7 @@ export const rbacUserMiddleware =
       perm =>
         (perm.role === role || perm.role === UserRoles.ADMIN) &&
         (perm.method === req.method.toLowerCase() || perm.method === Method.ALL) &&
-        (perm.path === req.path || perm.path === ALLOW_ALL)
+        (perm.baseUrl === req.baseUrl || perm.baseUrl === ALLOW_ALL)
     );
 
     if (permission && typeof permission.allowed === 'function') {
