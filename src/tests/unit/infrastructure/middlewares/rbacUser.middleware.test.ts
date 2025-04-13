@@ -54,7 +54,7 @@ describe('rbacUserMiddleware test', () => {
     middleware(req, res, next);
 
     expect(status).toHaveBeenCalledWith(403);
-    expect(json).toHaveBeenCalledWith({ message: 'Forbidden' });
+    expect(json).toHaveBeenCalledWith({ message: 'You are not allowed for this action' });
     expect(next).not.toHaveBeenCalled();
   });
 
@@ -107,7 +107,7 @@ describe('rbacUserMiddleware test', () => {
     req.baseUrl = testPath4;
     rbacUserMiddleware(permissions)(req, res, next);
     expect(status).toHaveBeenCalledWith(403);
-    expect(json).toHaveBeenCalledWith({ message: 'Forbidden' });
+    expect(json).toHaveBeenCalledWith({ message: 'You are not allowed for this action' });
     expect(next).toBeCalledTimes(3);
   });
 
@@ -165,7 +165,7 @@ describe('rbacUserMiddleware test', () => {
     middleware(req, res, next);
 
     expect(status).toHaveBeenCalledWith(403);
-    expect(json).toHaveBeenCalledWith({ message: 'Forbidden' });
+    expect(json).toHaveBeenCalledWith({ message: 'You are not allowed for this action' });
     expect(next).not.toHaveBeenCalled();
   });
 });

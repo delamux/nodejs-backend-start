@@ -30,23 +30,20 @@ export const rbacUserMiddleware =
     });
 
     if (!user) {
-      handleForbiddenResponse(res);
-      return;
+      return handleForbiddenResponse(res);
     }
     if (user?.isSuperUser === true) {
       return next();
     }
 
     if (permission === undefined) {
-      handleForbiddenResponse(res);
-      return;
+      return handleForbiddenResponse(res);
     }
 
     if (permission && typeof permission.allowed === 'function') {
       const isAllowed = permission.allowed(user, req);
       if (!isAllowed) {
-        handleForbiddenResponse(res);
-        return;
+        return handleForbiddenResponse(res);
       }
       return next();
     }
@@ -59,5 +56,5 @@ export const rbacUserMiddleware =
   };
 
 function handleForbiddenResponse(res: HttpResponse<Record<string, unknown>>): void {
-  res.status(403).json({ message: 'Forbidden' });
+  res.status(403).json({ message: 'You are not allowed for this action' });
 }
