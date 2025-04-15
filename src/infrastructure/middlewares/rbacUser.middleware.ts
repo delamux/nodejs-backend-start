@@ -15,7 +15,7 @@ export const rbacUserMiddleware =
     const permissionFound = permissions.find(permission => {
       const isRoleMatch = permission.role === userRole || permission.role === ALLOW_ALL;
       const isMethodMatch = hastMethodMatched(permission, req.method as Method);
-      const isUrlMatch = hasUrlMatched(permission, req);
+      const isUrlMatch = hasUrlMatched(permission, extractedPath(req.path));
       const byPassAuth = permission?.bypassAuth !== undefined && permission?.bypassAuth === true;
 
       if (isUrlMatch && isMethodMatch && byPassAuth) {
@@ -62,11 +62,15 @@ function hastMethodMatched(permission: Permission, reqMethod: Method): boolean {
   return isStringMethod || isPathIncluded;
 }
 
-function hasUrlMatched(permission: Permission, req: AuthenticatedRequest): boolean {
-  const isStringPath =
-    typeof permission.path === 'string' && (permission.path === req.path || permission.path === ALLOW_ALL);
+function extractedPath(path: string): string {
+  return path.split('/').slice(0, 2).join('/');
+}
 
-  const isPathIncluded = Array.isArray(permission.path) && permission.path.some(url => req.path === url);
+function hasUrlMatched(permission: Permission, reqPath: string): boolean {
+  const isStringPath =
+    typeof permission.path === 'string' && (permission.path === reqPath || permission.path === ALLOW_ALL);
+
+  const isPathIncluded = Array.isArray(permission.path) && permission.path.some(url => reqPath === url);
 
   return isStringPath || isPathIncluded;
 }
