@@ -1,6 +1,6 @@
 import { AppFactory } from './infrastructure/AppFactory';
+import { config } from './config';
 
 const server = AppFactory.createServer();
-const PORT = 3000;
-
-server.listen(PORT, () => console.log(`Server running on port http://localhost:${PORT}`));
+const PORT = config.port;
+server.listen(PORT, () => console.log(`Server running on port ${config.domainUrl}:${PORT}`));
