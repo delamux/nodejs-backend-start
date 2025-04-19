@@ -12,7 +12,7 @@ export enum Method {
   DELETE = 'DELETE',
 }
 
-export enum UserRoles {
+export enum UserRole {
   ALL = ALLOW_ALL,
   ADMIN = 'admin',
   USER = 'user',
@@ -21,7 +21,7 @@ export enum UserRoles {
 type Path = Routes | Routes[];
 
 export type Permission = {
-  role: UserRoles;
+  role: UserRole | UserRole[];
   path: Path;
   method: Method | Method[];
   bypassAuth?: boolean;
@@ -30,13 +30,13 @@ export type Permission = {
 
 export const permissions: Permission[] = [
   {
-    role: UserRoles.ALL,
+    role: UserRole.ALL,
     path: [Routes.welcome, Routes.status],
     method: Method.GET,
     bypassAuth: true,
   },
   {
-    role: UserRoles.ADMIN,
+    role: UserRole.ADMIN,
     path: Routes.dashBoard,
     method: Method.GET,
     allowed: true,

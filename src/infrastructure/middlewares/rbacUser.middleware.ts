@@ -1,7 +1,7 @@
 import { NextFunction, Request } from 'express';
 import { UserRequestDto } from '../../application/user/userRequest.dto';
 import { HttpResponse } from '../http';
-import { ALLOW_ALL, Method, Permission } from '../permissions';
+import { ALLOW_ALL, Method, Permission, UserRole } from '../permissions';
 
 export interface AuthenticatedRequest extends Request {
   user?: UserRequestDto;
@@ -13,7 +13,7 @@ export const rbacUserMiddleware =
     const user = req?.user;
     const userRole = user?.role;
     const permissionFound = permissions.find(permission => {
-      const isRoleMatch = permission.role === userRole || permission.role === ALLOW_ALL;
+      const isRoleMatch = hasRoleMatch(permission, userRole as UserRole);
       const isMethodMatch = hastMethodMatched(permission, req.method as Method);
       const isUrlMatch = hasUrlMatched(permission, extractedPath(req.path));
       const byPassAuth = permission?.bypassAuth !== undefined && permission?.bypassAuth === true;
@@ -54,6 +54,13 @@ export const rbacUserMiddleware =
 
     return handleForbiddenResponse(res);
   };
+
+function hasRoleMatch(permission: Permission, userRole: UserRole | UserRole[]): boolean {
+  const roles = Array.isArray(permission.role) ? permission.role : [permission.role];
+  const userRoles = Array.isArray(userRole) ? userRole : [userRole];
+
+  return roles.includes(UserRole.ALL) || roles.some(role => userRoles.includes(role));
+}
 
 function hastMethodMatched(permission: Permission, reqMethod: Method): boolean {
   const isStringMethod = permission.method === reqMethod || permission.method === ALLOW_ALL;

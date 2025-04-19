@@ -3,7 +3,7 @@ import { NextFunction } from 'express';
 import { HttpResponse } from '../../../../infrastructure/http';
 import { MockInstance } from '@vitest/spy';
 import { AuthenticatedRequest, rbacUserMiddleware } from '../../../../infrastructure/middlewares/rbacUser.middleware';
-import { Method, Permission, UserRoles } from '../../../../infrastructure/permissions';
+import { Method, Permission, UserRole } from '../../../../infrastructure/permissions';
 
 describe('rbacUserMiddleware test', () => {
   let status: MockInstance;
@@ -21,7 +21,7 @@ describe('rbacUserMiddleware test', () => {
   });
 
   it('should return Forbidden message for not existing user on request', () => {
-    const permissions: Permission[] = [{ role: UserRoles.USER, method: Method.GET, path: '/test', allowed: true }];
+    const permissions: Permission[] = [{ role: UserRole.USER, method: Method.GET, path: '/test', allowed: true }];
 
     const req = {
       path: '/test',
@@ -38,13 +38,13 @@ describe('rbacUserMiddleware test', () => {
 
   it('should call next for existing user with permission', () => {
     const testPath = '/test';
-    const permissions: Permission[] = [{ role: UserRoles.USER, method: Method.GET, path: testPath, allowed: true }];
+    const permissions: Permission[] = [{ role: UserRole.USER, method: Method.GET, path: testPath, allowed: true }];
     const req = {
       path: testPath,
       method: Method.GET,
       user: {
         email: 'no-relevant',
-        role: UserRoles.USER,
+        role: UserRole.USER,
       },
     } as AuthenticatedRequest;
 
@@ -60,14 +60,14 @@ describe('rbacUserMiddleware test', () => {
     const testPath3 = '/test3';
     const testPath4 = '/test4';
     const permissions: Permission[] = [
-      { role: UserRoles.USER, method: Method.GET, path: [testPath1, testPath2, testPath3], allowed: true },
+      { role: UserRole.USER, method: Method.GET, path: [testPath1, testPath2, testPath3], allowed: true },
     ];
     const req = {
       path: testPath1,
       method: Method.GET,
       user: {
         email: 'no-relevant',
-        role: UserRoles.USER,
+        role: UserRole.USER,
       },
     };
 
@@ -90,12 +90,12 @@ describe('rbacUserMiddleware test', () => {
 
   it('Is super user then it will call next method', () => {
     const testPath = '/test';
-    const permissions: Permission[] = [{ role: UserRoles.USER, method: Method.GET, path: testPath, allowed: true }];
+    const permissions: Permission[] = [{ role: UserRole.USER, method: Method.GET, path: testPath, allowed: true }];
     const req = {
       path: testPath,
       method: Method.GET,
       user: {
-        role: UserRoles.USER,
+        role: UserRole.USER,
         email: 'no-relevant',
         isSuperUser: true,
       },
@@ -110,13 +110,13 @@ describe('rbacUserMiddleware test', () => {
   it('Should call next method when is bypassAuth true', () => {
     const testPath = '/test';
     const permissions: Permission[] = [
-      { role: 'no-relevant' as UserRoles, method: Method.GET, path: testPath, bypassAuth: true },
+      { role: 'no-relevant' as UserRole, method: Method.GET, path: testPath, bypassAuth: true },
     ];
     const req = {
       path: testPath,
       method: Method.GET,
       user: {
-        role: 'no-relevant' as UserRoles,
+        role: 'no-relevant' as UserRole,
         email: 'no-relevant',
       },
     } as AuthenticatedRequest;
@@ -137,14 +137,14 @@ describe('rbacUserMiddleware test', () => {
       },
       user: {
         id: '1',
-        role: UserRoles.ADMIN,
+        role: UserRole.ADMIN,
         email: 'no-relevant',
         isSuperUser: false,
       },
     } as unknown as AuthenticatedRequest;
     const permissions: Permission[] = [
       {
-        role: UserRoles.ADMIN,
+        role: UserRole.ADMIN,
         method: Method.PUT,
         path: testPath,
         allowed: (user, req): boolean => {
@@ -152,7 +152,7 @@ describe('rbacUserMiddleware test', () => {
         },
       },
       {
-        role: UserRoles.ADMIN,
+        role: UserRole.ADMIN,
         method: Method.ALL,
         path: testPath,
         allowed: true,
@@ -173,12 +173,12 @@ describe('rbacUserMiddleware test', () => {
       path: testPath,
       method: Method.PUT,
       user: {
-        role: UserRoles.USER,
+        role: UserRole.USER,
       },
     } as unknown as AuthenticatedRequest;
     const permissions: Permission[] = [
       {
-        role: UserRoles.USER,
+        role: UserRole.USER,
         method: [Method.PUT, Method.GET],
         path: testPath,
         allowed: true,
@@ -196,12 +196,12 @@ describe('rbacUserMiddleware test', () => {
       path: testPath,
       method: Method.POST,
       user: {
-        role: UserRoles.USER,
+        role: UserRole.USER,
       },
     } as unknown as AuthenticatedRequest;
     const permissions: Permission[] = [
       {
-        role: UserRoles.USER,
+        role: UserRole.USER,
         method: [Method.PUT, Method.GET],
         path: testPath,
         allowed: true,
