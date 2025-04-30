@@ -18,20 +18,24 @@ class Permission {
     this.validatePath(permission.path);
   }
 
-  private static validatePath(path: Routes) {
+  private static validateRole(roles: UserRole[]): void {
+    if (roles.length === 0) {
+      throw new Error('should contain at least one role');
+    }
+
+    if (!roles.some(role => Object.values(UserRole).includes(role))) {
+      throw new Error('should has a valid role');
+    }
+
+    this.roles = [...roles];
+  }
+
+  private static validatePath(path: Routes): void {
     if (!path) {
       throw new Error('should contain at least one path allowed');
     }
 
     this.path = path;
-  }
-
-  private static validateRole(role: UserRole[]): void {
-    if (role.length === 0) {
-      throw new Error('should contain at least one role');
-    }
-
-    this.roles = [...role];
   }
 
   hasRole(role: UserRole): boolean {
@@ -48,6 +52,12 @@ describe('Permission test', () => {
     expect(() => {
       Permission.create(' permission test', { role: [] } as UserPermission);
     }).toThrowError('should contain at least one role');
+  });
+
+  it('should throw an error when is not a valid Role', () => {
+    expect(() => {
+      Permission.create(' permission test', { role: ['no-valid-role'] } as unknown as UserPermission);
+    }).toThrowError('should has a valid role');
   });
 
   it('should throw an error when is not Path assigned ', () => {
