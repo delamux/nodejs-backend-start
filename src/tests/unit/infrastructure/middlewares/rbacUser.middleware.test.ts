@@ -22,7 +22,7 @@ describe('rbacUserMiddleware test', () => {
 
   it('should return Forbidden message for not existing user on request', () => {
     const permissions: UserPermission[] = [
-      { role: [UserRole.USER], method: [Method.GET], path: '/test', allowed: true },
+      { roles: [UserRole.USER], methods: [Method.GET], path: '/test', allowed: true },
     ];
 
     const req = {
@@ -41,7 +41,7 @@ describe('rbacUserMiddleware test', () => {
   it('should call next for existing user with permission', () => {
     const testPath = '/test';
     const permissions: UserPermission[] = [
-      { role: [UserRole.USER], method: [Method.GET], path: testPath, allowed: true },
+      { roles: [UserRole.USER], methods: [Method.GET], path: testPath, allowed: true },
     ];
     const req = {
       path: testPath,
@@ -64,7 +64,7 @@ describe('rbacUserMiddleware test', () => {
     const testPath3 = '/test3';
     const testPath4 = '/test4';
     const permissions: UserPermission[] = [
-      { role: [UserRole.USER], method: [Method.GET], path: [testPath1, testPath2, testPath3], allowed: true },
+      { roles: [UserRole.USER], methods: [Method.GET], path: [testPath1, testPath2, testPath3], allowed: true },
     ];
     const req = {
       path: testPath1,
@@ -95,7 +95,7 @@ describe('rbacUserMiddleware test', () => {
   it('Is super user then it will call next method', () => {
     const testPath = '/test';
     const permissions: UserPermission[] = [
-      { role: [UserRole.USER], method: [Method.GET], path: testPath, allowed: true },
+      { roles: [UserRole.USER], methods: [Method.GET], path: testPath, allowed: true },
     ];
     const req = {
       path: testPath,
@@ -116,7 +116,7 @@ describe('rbacUserMiddleware test', () => {
   it('Should call next method when is bypassAuth true', () => {
     const testPath = '/test';
     const permissions: UserPermission[] = [
-      { role: ['no-relevant' as UserRole], method: [Method.GET], path: testPath, bypassAuth: true },
+      { roles: ['no-relevant' as UserRole], methods: [Method.GET], path: testPath, bypassAuth: true },
     ];
     const req = {
       path: testPath,
@@ -150,16 +150,16 @@ describe('rbacUserMiddleware test', () => {
     } as unknown as AuthenticatedRequest;
     const permissions: UserPermission[] = [
       {
-        role: [UserRole.ADMIN],
-        method: [Method.PUT],
+        roles: [UserRole.ADMIN],
+        methods: [Method.PUT],
         path: testPath,
         allowed: (user, req): boolean => {
           return user.id === req.params.id;
         },
       },
       {
-        role: [UserRole.ADMIN],
-        method: [Method.ALL],
+        roles: [UserRole.ADMIN],
+        methods: [Method.ALL],
         path: testPath,
         allowed: true,
       },
@@ -184,8 +184,8 @@ describe('rbacUserMiddleware test', () => {
     } as unknown as AuthenticatedRequest;
     const permissions: UserPermission[] = [
       {
-        role: [UserRole.USER],
-        method: [Method.PUT, Method.GET],
+        roles: [UserRole.USER],
+        methods: [Method.PUT, Method.GET],
         path: testPath,
         allowed: true,
       },
@@ -207,8 +207,8 @@ describe('rbacUserMiddleware test', () => {
     } as unknown as AuthenticatedRequest;
     const permissions: UserPermission[] = [
       {
-        role: [UserRole.USER],
-        method: [Method.PUT, Method.GET],
+        roles: [UserRole.USER],
+        methods: [Method.PUT, Method.GET],
         path: testPath,
         allowed: true,
       },

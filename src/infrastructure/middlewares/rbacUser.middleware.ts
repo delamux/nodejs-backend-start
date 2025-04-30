@@ -56,14 +56,14 @@ export const rbacUserMiddleware =
   };
 
 function hasRoleMatch(permission: UserPermission, userRole: UserRole | UserRole[]): boolean {
-  const roles = Array.isArray(permission.role) ? permission.role : [permission.role];
+  const roles = Array.isArray(permission.roles) ? permission.roles : [permission.roles];
   const userRoles = Array.isArray(userRole) ? userRole : [userRole];
 
   return roles.includes(UserRole.ALL) || roles.some(role => userRoles.includes(role));
 }
 
 function hastMethodMatched(permission: UserPermission, reqMethod: Method): boolean {
-  return Array.isArray(permission.method) && permission.method.some(method => reqMethod === method);
+  return Array.isArray(permission.methods) && permission.methods.some(method => reqMethod === method);
 }
 
 function extractedPath(path: string): string {

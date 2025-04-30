@@ -14,9 +14,9 @@ export class Permission {
   }
 
   private static validate(permission: UserPermission): void {
-    this.validateRole(permission.role);
+    this.validateRole(permission.roles);
     this.validatePath(permission.path);
-    this.validateMethod(permission.method);
+    this.validateMethod(permission.methods);
   }
 
   private static validateMethod(method: Method[]): void {

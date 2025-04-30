@@ -19,24 +19,24 @@ export enum UserRole {
 }
 
 export type UserPermission = {
-  role: UserRole[];
+  roles: UserRole[];
   path: Routes;
-  method: Method[];
+  methods: Method[];
   bypassAuth?: boolean;
   allowed?: boolean | ((user: UserRequestDto, request: Request) => boolean);
 };
 
 export const permissions: UserPermission[] = [
   {
-    role: [UserRole.ALL],
+    roles: [UserRole.ALL],
     path: [Routes.welcome, Routes.status],
-    method: [Method.GET],
+    methods: [Method.GET],
     bypassAuth: true,
   },
   {
-    role: [UserRole.ADMIN],
+    roles: [UserRole.ADMIN],
     path: Routes.dashBoard,
-    method: [Method.GET],
+    methods: [Method.GET],
     allowed: true,
   },
 ] as const;
