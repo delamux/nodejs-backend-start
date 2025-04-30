@@ -40,6 +40,16 @@ describe('Permission test', () => {
     }).toThrowError('Should contain at least one method');
   });
 
+  it('Should throw an error when method is not valid', () => {
+    expect(() => {
+      Permission.create('permission test', {
+        role: [UserRole.USER],
+        path: Routes.status,
+        method: ['no-valid-method'] as Method[],
+      } as unknown as UserPermission);
+    }).toThrowError('Should contain a valid method');
+  });
+
   it('Add Roles to permission and should has permission for that role', () => {
     const permission = Permission.create(' permission test', {
       role: [UserRole.USER],

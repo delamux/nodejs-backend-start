@@ -18,9 +18,12 @@ export class Permission {
     this.validateMethod(permission.method);
   }
 
-  private static validateMethod(method: Method[]) {
+  private static validateMethod(method: Method[]): void {
     if (method === undefined || method.length === 0) {
       throw new Error('Should contain at least one method');
+    }
+    if (!method.some(m => Object.values(Method).includes(m))) {
+      throw new Error('Should contain a valid method');
     }
   }
 
