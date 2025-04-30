@@ -14,24 +14,31 @@ class Permission {
   }
 
   private static validate(permission: UserPermission): void {
-    if (permission.role.length === 0) {
-      throw new Error('should contain at least one role');
-    }
+    this.validateRole(permission.role);
+    this.validatePath(permission.path);
+  }
 
-    this.roles = [...permission.role];
-
-    if (!permission.path) {
+  private static validatePath(path: Routes) {
+    if (!path) {
       throw new Error('should contain at least one path allowed');
     }
 
-    this.path = permission.path;
+    this.path = path;
+  }
+
+  private static validateRole(role: UserRole[]): void {
+    if (role.length === 0) {
+      throw new Error('should contain at least one role');
+    }
+
+    this.roles = [...role];
   }
 
   hasRole(role: UserRole): boolean {
     return Permission.roles.includes(role);
   }
 
-  hasPath(path: Routes) {
+  hasPath(path: Routes): boolean {
     return Permission.path === path;
   }
 }
@@ -55,6 +62,7 @@ describe('Permission test', () => {
       path: Routes.status,
     } as unknown as UserPermission);
 
+    expect(permission.hasRole(UserRole.USER)).toBe(true);
     expect(permission.hasPath(Routes.status)).toBe(true);
     expect(permission.hasPath(Routes.dashBoard)).toBe(false);
   });
