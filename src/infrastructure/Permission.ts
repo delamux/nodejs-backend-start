@@ -1,4 +1,4 @@
-import { UserPermission, UserRole } from './permissions';
+import { Method, UserPermission, UserRole } from './permissions';
 import { Routes } from './routes';
 
 export class Permission {
@@ -15,6 +15,13 @@ export class Permission {
   private static validate(permission: UserPermission): void {
     this.validateRole(permission.role);
     this.validatePath(permission.path);
+    this.validateMethod(permission.method);
+  }
+
+  private static validateMethod(method: Method[]) {
+    if (method === undefined || method.length === 0) {
+      throw new Error('Should contain at least one method');
+    }
   }
 
   private static validateRole(roles: UserRole[]): void {

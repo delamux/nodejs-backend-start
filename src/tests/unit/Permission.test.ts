@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { UserPermission, UserRole } from '../../infrastructure/permissions';
+import { Method, UserPermission, UserRole } from '../../infrastructure/permissions';
 import { Routes } from '../../infrastructure/routes';
 import { Permission } from '../../infrastructure/Permission';
 
@@ -31,10 +31,20 @@ describe('Permission test', () => {
     }).toThrowError('Should have a valid path');
   });
 
+  it('Should throw an error when hast not method', () => {
+    expect(() => {
+      Permission.create('permission test', {
+        role: [UserRole.USER],
+        path: Routes.status,
+      } as unknown as UserPermission);
+    }).toThrowError('Should contain at least one method');
+  });
+
   it('Add Roles to permission and should has permission for that role', () => {
     const permission = Permission.create(' permission test', {
       role: [UserRole.USER],
       path: Routes.status,
+      method: [Method.GET],
     } as unknown as UserPermission);
 
     expect(permission.hasRole(UserRole.USER)).toBe(true);
