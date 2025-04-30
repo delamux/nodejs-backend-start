@@ -1,4 +1,4 @@
-import { Method, UserPermission, UserRole } from './permissions';
+import { Method, permissions, UserPermission, UserRole } from './permissions';
 import { Routes } from './routes';
 
 export class Permission {
@@ -14,6 +14,36 @@ export class Permission {
     return new Permission(name);
   }
 
+  hasRole(role: UserRole): boolean {
+    return Permission.roles.includes(role);
+  }
+
+  hasPath(path: Routes): boolean {
+    return Permission.path === path;
+  }
+
+  hasMethod(method: Method): boolean {
+    return Permission.methods.includes(method);
+  }
+
+  hasPermission(permission: Permission): boolean {
+    if (Permission.bypassAuth && permission.path === Permission.path && this.containMethod(permission.methods)) {
+      return true;
+    }
+  }
+
+  get path(): Routes {
+    return Permission.path;
+  }
+
+  get methods(): Method[] {
+    return Permission.methods;
+  }
+
+  private containMethod(methods: Method[]): boolean {
+    return methods.some(m => Object.values(Method).includes(m));
+  }
+
   private static validate(permission: UserPermission): void {
     this.validateRole(permission.roles);
     this.validatePath(permission.path);
@@ -23,15 +53,16 @@ export class Permission {
     }
   }
 
-  private static validateMethod(method: Method[]): void {
-    if (method === undefined || method.length === 0) {
+  private static validateMethod(methods: Method[]): void {
+    if (methods === undefined || methods.length === 0) {
       throw new Error('Should contain at least one method');
     }
-    if (!method.some(m => Object.values(Method).includes(m))) {
+
+    if (!methods.some(m => Object.values(Method).includes(m))) {
       throw new Error('Should contain a valid method');
     }
 
-    this.methods = [...method];
+    this.methods = [...methods];
   }
 
   private static validateRole(roles: UserRole[]): void {
@@ -56,23 +87,5 @@ export class Permission {
     }
 
     this.path = path;
-  }
-
-  hasRole(role: UserRole): boolean {
-    return Permission.roles.includes(role);
-  }
-
-  hasPath(path: Routes): boolean {
-    return Permission.path === path;
-  }
-
-  hasMethod(method: Method): boolean {
-    return Permission.methods.includes(method);
-  }
-
-  hasPermission(): boolean {
-    if (Permission.bypassAuth) {
-      return true;
-    }
   }
 }

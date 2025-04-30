@@ -63,7 +63,7 @@ describe('Permission test', () => {
     expect(permission.hasMethod(Method.GET)).toBe(true);
   });
 
-  it('Should has permissions when byPassAuth is true', () => {
+  it('Should has permissions when byPassAuth, method and path', () => {
     const permission = Permission.create(' permission test', {
       roles: [UserRole.USER],
       path: Routes.status,
@@ -71,6 +71,6 @@ describe('Permission test', () => {
       bypassAuth: true,
     });
 
-    expect(permission.hasPermission()).toBe(true);
+    expect(permission.hasPermission(permission)).toBe(true);
   });
 });
