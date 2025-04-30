@@ -1,14 +1,14 @@
 import { NextFunction, Request } from 'express';
 import { UserRequestDto } from '../../application/user/userRequest.dto';
 import { HttpResponse } from '../http';
-import { ALLOW_ALL, Method, Permission, UserRole } from '../permissions';
+import { ALLOW_ALL, Method, UserPermission, UserRole } from '../permissions';
 
 export interface AuthenticatedRequest extends Request {
   user?: UserRequestDto;
 }
 
 export const rbacUserMiddleware =
-  (permissions: Permission[]) =>
+  (permissions: UserPermission[]) =>
   (req: AuthenticatedRequest, res: HttpResponse<Record<string, unknown>>, next: NextFunction): void => {
     const user = req?.user;
     const userRole = user?.role;
@@ -55,25 +55,22 @@ export const rbacUserMiddleware =
     return handleForbiddenResponse(res);
   };
 
-function hasRoleMatch(permission: Permission, userRole: UserRole | UserRole[]): boolean {
+function hasRoleMatch(permission: UserPermission, userRole: UserRole | UserRole[]): boolean {
   const roles = Array.isArray(permission.role) ? permission.role : [permission.role];
   const userRoles = Array.isArray(userRole) ? userRole : [userRole];
 
   return roles.includes(UserRole.ALL) || roles.some(role => userRoles.includes(role));
 }
 
-function hastMethodMatched(permission: Permission, reqMethod: Method): boolean {
-  const isStringMethod = permission.method === reqMethod || permission.method === ALLOW_ALL;
-  const isPathIncluded = Array.isArray(permission.method) && permission.method.some(method => reqMethod === method);
-
-  return isStringMethod || isPathIncluded;
+function hastMethodMatched(permission: UserPermission, reqMethod: Method): boolean {
+  return Array.isArray(permission.method) && permission.method.some(method => reqMethod === method);
 }
 
 function extractedPath(path: string): string {
   return path.split('/').slice(0, 2).join('/');
 }
 
-function hasUrlMatched(permission: Permission, reqPath: string): boolean {
+function hasUrlMatched(permission: UserPermission, reqPath: string): boolean {
   const isStringPath =
     typeof permission.path === 'string' && (permission.path === reqPath || permission.path === ALLOW_ALL);
 

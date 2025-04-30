@@ -3,7 +3,7 @@ import { NextFunction } from 'express';
 import { HttpResponse } from '../../../../infrastructure/http';
 import { MockInstance } from '@vitest/spy';
 import { AuthenticatedRequest, rbacUserMiddleware } from '../../../../infrastructure/middlewares/rbacUser.middleware';
-import { Method, Permission, UserRole } from '../../../../infrastructure/permissions';
+import { Method, UserPermission, UserRole } from '../../../../infrastructure/permissions';
 
 describe('rbacUserMiddleware test', () => {
   let status: MockInstance;
@@ -21,7 +21,7 @@ describe('rbacUserMiddleware test', () => {
   });
 
   it('should return Forbidden message for not existing user on request', () => {
-    const permissions: Permission[] = [{ role: UserRole.USER, method: Method.GET, path: '/test', allowed: true }];
+    const permissions: UserPermission[] = [{ role: UserRole.USER, method: Method.GET, path: '/test', allowed: true }];
 
     const req = {
       path: '/test',
@@ -38,7 +38,9 @@ describe('rbacUserMiddleware test', () => {
 
   it('should call next for existing user with permission', () => {
     const testPath = '/test';
-    const permissions: Permission[] = [{ role: UserRole.USER, method: Method.GET, path: testPath, allowed: true }];
+    const permissions: UserPermission[] = [
+      { role: [UserRole.USER], method: [Method.GET], path: testPath, allowed: true },
+    ];
     const req = {
       path: testPath,
       method: Method.GET,
@@ -59,8 +61,8 @@ describe('rbacUserMiddleware test', () => {
     const testPath2 = '/test2';
     const testPath3 = '/test3';
     const testPath4 = '/test4';
-    const permissions: Permission[] = [
-      { role: UserRole.USER, method: Method.GET, path: [testPath1, testPath2, testPath3], allowed: true },
+    const permissions: UserPermission[] = [
+      { role: [UserRole.USER], method: [Method.GET], path: [testPath1, testPath2, testPath3], allowed: true },
     ];
     const req = {
       path: testPath1,
@@ -90,7 +92,9 @@ describe('rbacUserMiddleware test', () => {
 
   it('Is super user then it will call next method', () => {
     const testPath = '/test';
-    const permissions: Permission[] = [{ role: UserRole.USER, method: Method.GET, path: testPath, allowed: true }];
+    const permissions: UserPermission[] = [
+      { role: [UserRole.USER], method: [Method.GET], path: testPath, allowed: true },
+    ];
     const req = {
       path: testPath,
       method: Method.GET,
@@ -109,8 +113,8 @@ describe('rbacUserMiddleware test', () => {
 
   it('Should call next method when is bypassAuth true', () => {
     const testPath = '/test';
-    const permissions: Permission[] = [
-      { role: 'no-relevant' as UserRole, method: Method.GET, path: testPath, bypassAuth: true },
+    const permissions: UserPermission[] = [
+      { role: ['no-relevant' as UserRole], method: [Method.GET], path: testPath, bypassAuth: true },
     ];
     const req = {
       path: testPath,
@@ -142,7 +146,7 @@ describe('rbacUserMiddleware test', () => {
         isSuperUser: false,
       },
     } as unknown as AuthenticatedRequest;
-    const permissions: Permission[] = [
+    const permissions: UserPermission[] = [
       {
         role: UserRole.ADMIN,
         method: Method.PUT,
@@ -152,8 +156,8 @@ describe('rbacUserMiddleware test', () => {
         },
       },
       {
-        role: UserRole.ADMIN,
-        method: Method.ALL,
+        role: [UserRole.ADMIN],
+        method: [Method.ALL],
         path: testPath,
         allowed: true,
       },
@@ -176,7 +180,7 @@ describe('rbacUserMiddleware test', () => {
         role: UserRole.USER,
       },
     } as unknown as AuthenticatedRequest;
-    const permissions: Permission[] = [
+    const permissions: UserPermission[] = [
       {
         role: UserRole.USER,
         method: [Method.PUT, Method.GET],
@@ -199,7 +203,7 @@ describe('rbacUserMiddleware test', () => {
         role: UserRole.USER,
       },
     } as unknown as AuthenticatedRequest;
-    const permissions: Permission[] = [
+    const permissions: UserPermission[] = [
       {
         role: UserRole.USER,
         method: [Method.PUT, Method.GET],
