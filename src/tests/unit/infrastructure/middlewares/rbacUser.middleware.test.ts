@@ -21,7 +21,9 @@ describe('rbacUserMiddleware test', () => {
   });
 
   it('should return Forbidden message for not existing user on request', () => {
-    const permissions: UserPermission[] = [{ role: UserRole.USER, method: Method.GET, path: '/test', allowed: true }];
+    const permissions: UserPermission[] = [
+      { role: [UserRole.USER], method: [Method.GET], path: '/test', allowed: true },
+    ];
 
     const req = {
       path: '/test',
@@ -148,8 +150,8 @@ describe('rbacUserMiddleware test', () => {
     } as unknown as AuthenticatedRequest;
     const permissions: UserPermission[] = [
       {
-        role: UserRole.ADMIN,
-        method: Method.PUT,
+        role: [UserRole.ADMIN],
+        method: [Method.PUT],
         path: testPath,
         allowed: (user, req): boolean => {
           return user.id === req.params.id;
@@ -182,7 +184,7 @@ describe('rbacUserMiddleware test', () => {
     } as unknown as AuthenticatedRequest;
     const permissions: UserPermission[] = [
       {
-        role: UserRole.USER,
+        role: [UserRole.USER],
         method: [Method.PUT, Method.GET],
         path: testPath,
         allowed: true,
@@ -205,7 +207,7 @@ describe('rbacUserMiddleware test', () => {
     } as unknown as AuthenticatedRequest;
     const permissions: UserPermission[] = [
       {
-        role: UserRole.USER,
+        role: [UserRole.USER],
         method: [Method.PUT, Method.GET],
         path: testPath,
         allowed: true,
