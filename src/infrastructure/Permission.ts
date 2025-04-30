@@ -5,6 +5,7 @@ export class Permission {
   private static roles: UserRole[] = [];
   private static path: Routes;
   private static methods: Method[];
+  private static bypassAuth: boolean;
 
   constructor(readonly name: string) {}
 
@@ -64,5 +65,11 @@ export class Permission {
 
   hasMethod(method: Method): boolean {
     return Permission.methods.includes(method);
+  }
+
+  hasPermission(): boolean {
+    if (Permission.bypassAuth) {
+      return true;
+    }
   }
 }

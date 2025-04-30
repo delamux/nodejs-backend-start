@@ -55,11 +55,22 @@ describe('Permission test', () => {
       roles: [UserRole.USER],
       path: Routes.status,
       methods: [Method.GET],
-    } as unknown as UserPermission);
+    });
 
     expect(permission.hasRole(UserRole.USER)).toBe(true);
     expect(permission.hasPath(Routes.status)).toBe(true);
     expect(permission.hasPath(Routes.dashBoard)).toBe(false);
     expect(permission.hasMethod(Method.GET)).toBe(true);
+  });
+
+  it('Should has permissions when byPassAuth is true', () => {
+    const permission = Permission.create(' permission test', {
+      roles: [UserRole.USER],
+      path: Routes.status,
+      methods: [Method.GET],
+      bypassAuth: true,
+    });
+
+    expect(permission.hasPermission()).toBe(true);
   });
 });
