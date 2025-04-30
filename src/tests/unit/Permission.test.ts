@@ -20,11 +20,11 @@ class Permission {
 
   private static validateRole(roles: UserRole[]): void {
     if (roles.length === 0) {
-      throw new Error('should contain at least one role');
+      throw new Error('Should contain at least one role');
     }
 
     if (!roles.some(role => Object.values(UserRole).includes(role))) {
-      throw new Error('should has a valid role');
+      throw new Error('Should has a valid role');
     }
 
     this.roles = [...roles];
@@ -32,7 +32,11 @@ class Permission {
 
   private static validatePath(path: Routes): void {
     if (!path) {
-      throw new Error('should contain at least one path allowed');
+      throw new Error('Should contain at least one path allowed');
+    }
+
+    if (!Object.values(Routes).includes(path)) {
+      throw new Error('Should have a valid path');
     }
 
     this.path = path;
@@ -50,20 +54,29 @@ class Permission {
 describe('Permission test', () => {
   it('should throw an error when is not Role assigned ', () => {
     expect(() => {
-      Permission.create(' permission test', { role: [] } as UserPermission);
-    }).toThrowError('should contain at least one role');
+      Permission.create('permission test', { role: [] } as UserPermission);
+    }).toThrowError('Should contain at least one role');
   });
 
-  it('should throw an error when is not a valid Role', () => {
+  it('Should  throw an error when is not a valid Role', () => {
     expect(() => {
-      Permission.create(' permission test', { role: ['no-valid-role'] } as unknown as UserPermission);
-    }).toThrowError('should has a valid role');
+      Permission.create('permission test', { role: ['no-valid-role'] } as unknown as UserPermission);
+    }).toThrowError('Should has a valid role');
   });
 
-  it('should throw an error when is not Path assigned ', () => {
+  it('Should  throw an error when is not Path assigned ', () => {
     expect(() => {
-      Permission.create(' permission test', { role: [UserRole.USER] } as UserPermission);
-    }).toThrowError('should contain at least one path allowed');
+      Permission.create('permission test', { role: [UserRole.USER] } as UserPermission);
+    }).toThrowError('Should contain at least one path allowed');
+  });
+
+  it('Should  throw an error when is not valid Path ', () => {
+    expect(() => {
+      Permission.create(' permission test', {
+        role: [UserRole.USER],
+        path: 'no-valid-path',
+      } as unknown as UserPermission);
+    }).toThrowError('Should have a valid path');
   });
 
   it('Add Roles to permission and should has permission for that role', () => {
