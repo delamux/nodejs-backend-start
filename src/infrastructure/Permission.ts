@@ -18,6 +18,9 @@ export class Permission {
     this.validateRole(permission.roles);
     this.validatePath(permission.path);
     this.validateMethod(permission.methods);
+    if (permission.bypassAuth !== undefined && typeof permission.bypassAuth === 'boolean') {
+      this.bypassAuth = permission.bypassAuth;
+    }
   }
 
   private static validateMethod(method: Method[]): void {
