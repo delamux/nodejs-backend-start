@@ -45,7 +45,7 @@ describe('Permission test', () => {
       Permission.create('permission test', {
         role: [UserRole.USER],
         path: Routes.status,
-        method: ['no-valid-method'] as Method[],
+        method: ['no-valid-method'],
       } as unknown as UserPermission);
     }).toThrowError('Should contain a valid method');
   });
