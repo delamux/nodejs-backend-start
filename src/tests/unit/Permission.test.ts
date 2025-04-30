@@ -60,5 +60,6 @@ describe('Permission test', () => {
     expect(permission.hasRole(UserRole.USER)).toBe(true);
     expect(permission.hasPath(Routes.status)).toBe(true);
     expect(permission.hasPath(Routes.dashBoard)).toBe(false);
+    expect(permission.hasMethod(Method.GET)).toBe(true);
   });
 });

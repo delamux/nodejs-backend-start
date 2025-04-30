@@ -4,6 +4,7 @@ import { Routes } from './routes';
 export class Permission {
   private static roles: UserRole[] = [];
   private static path: Routes;
+  private static methods: Method[];
 
   constructor(readonly name: string) {}
 
@@ -25,6 +26,8 @@ export class Permission {
     if (!method.some(m => Object.values(Method).includes(m))) {
       throw new Error('Should contain a valid method');
     }
+
+    this.methods = [...method];
   }
 
   private static validateRole(roles: UserRole[]): void {
@@ -57,5 +60,9 @@ export class Permission {
 
   hasPath(path: Routes): boolean {
     return Permission.path === path;
+  }
+
+  hasMethod(method: Method): boolean {
+    return Permission.methods.includes(method);
   }
 }
