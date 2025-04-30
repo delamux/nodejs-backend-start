@@ -18,11 +18,9 @@ export enum UserRole {
   USER = 'user',
 }
 
-type Path = Routes | Routes[];
-
 export type UserPermission = {
   role: UserRole[];
-  path: Path;
+  path: Routes;
   method: Method[];
   bypassAuth?: boolean;
   allowed?: boolean | ((user: UserRequestDto, request: Request) => boolean);

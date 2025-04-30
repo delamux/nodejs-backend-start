@@ -1,8 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { UserPermission, UserRole } from '../../infrastructure/permissions';
+import { Routes } from '../../infrastructure/routes';
 
 class Permission {
   private static roles: UserRole[] = [];
+  private static path: Routes;
+
   constructor(readonly name: string) {}
 
   static create(name: string, permission: UserPermission): Permission {
@@ -11,29 +14,48 @@ class Permission {
   }
 
   private static validate(permission: UserPermission): void {
-    this.roles = [...permission.role];
-    if (this.roles.length === 0) {
+    if (permission.role.length === 0) {
       throw new Error('should contain at least one role');
     }
+
+    this.roles = [...permission.role];
+
+    if (!permission.path) {
+      throw new Error('should contain at least one path allowed');
+    }
+
+    this.path = permission.path;
   }
 
   hasRole(role: UserRole): boolean {
     return Permission.roles.includes(role);
   }
+
+  hasPath(path: Routes) {
+    return Permission.path === path;
+  }
 }
 
 describe('Permission test', () => {
-  it('should throw an error with message: ', () => {
+  it('should throw an error when is not Role assigned ', () => {
     expect(() => {
       Permission.create(' permission test', { role: [] } as UserPermission);
     }).toThrowError('should contain at least one role');
   });
 
+  it('should throw an error when is not Path assigned ', () => {
+    expect(() => {
+      Permission.create(' permission test', { role: [UserRole.USER] } as UserPermission);
+    }).toThrowError('should contain at least one path allowed');
+  });
+
   it('Add Roles to permission and should has permission for that role', () => {
     const permission = Permission.create(' permission test', {
       role: [UserRole.USER],
-    } as UserPermission);
+      path: Routes.status,
+    } as unknown as UserPermission);
 
-    expect(permission.hasRole(UserRole.USER)).toBe(true);
+    expect(permission.hasPath(Routes.status)).toBe(true);
+    expect(permission.hasPath(Routes.dashBoard)).toBe(false);
   });
 });
