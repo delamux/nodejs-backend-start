@@ -73,4 +73,21 @@ describe('Permission test', () => {
 
     expect(permission.hasPermission(permission)).toBe(true);
   });
+
+  it('Should return false with bypassAuth true, but not right path or method', () => {
+    const userPermission: UserPermission = {
+      roles: [UserRole.USER],
+      path: Routes.status,
+      methods: [Method.GET],
+      bypassAuth: true,
+    };
+
+    const differentPathPermission = Permission.create('permissions-passed', {
+      roles: [UserRole.USER],
+      path: Routes.dashBoard,
+      methods: [Method.GET],
+    });
+
+    expect(Permission.create('permission-test', userPermission).hasPermission(differentPathPermission)).toBe(false);
+  });
 });

@@ -1,43 +1,42 @@
-import { Method, permissions, UserPermission, UserRole } from './permissions';
+import { Method, UserPermission, UserRole } from './permissions';
 import { Routes } from './routes';
 
 export class Permission {
-  private static roles: UserRole[] = [];
-  private static path: Routes;
-  private static methods: Method[];
-  private static bypassAuth: boolean;
-
-  constructor(readonly name: string) {}
+  constructor(
+    readonly name: string,
+    readonly path: Routes,
+    readonly methods: Method[],
+    private readonly roles: UserRole[],
+    private readonly bypassAuth?: boolean
+  ) {}
 
   static create(name: string, permission: UserPermission): Permission {
     this.validate(permission);
-    return new Permission(name);
+    return new Permission(name, permission.path, permission.methods, permission.roles, permission.bypassAuth);
   }
 
   hasRole(role: UserRole): boolean {
-    return Permission.roles.includes(role);
+    return this.roles.includes(role);
   }
 
   hasPath(path: Routes): boolean {
-    return Permission.path === path;
+    return this.path === path;
   }
 
   hasMethod(method: Method): boolean {
-    return Permission.methods.includes(method);
+    return this.methods.includes(method);
   }
 
-  hasPermission(permission: Permission): boolean {
-    if (Permission.bypassAuth && permission.path === Permission.path && this.containMethod(permission.methods)) {
+  hasPermission(passedPermission: Permission): boolean {
+    if (
+      this.bypassAuth === true &&
+      passedPermission.path === this.path &&
+      this.containMethod(passedPermission.methods)
+    ) {
       return true;
     }
-  }
 
-  get path(): Routes {
-    return Permission.path;
-  }
-
-  get methods(): Method[] {
-    return Permission.methods;
+    return false;
   }
 
   private containMethod(methods: Method[]): boolean {
@@ -48,9 +47,6 @@ export class Permission {
     this.validateRole(permission.roles);
     this.validatePath(permission.path);
     this.validateMethod(permission.methods);
-    if (permission.bypassAuth !== undefined && typeof permission.bypassAuth === 'boolean') {
-      this.bypassAuth = permission.bypassAuth;
-    }
   }
 
   private static validateMethod(methods: Method[]): void {
@@ -61,8 +57,6 @@ export class Permission {
     if (!methods.some(m => Object.values(Method).includes(m))) {
       throw new Error('Should contain a valid method');
     }
-
-    this.methods = [...methods];
   }
 
   private static validateRole(roles: UserRole[]): void {
@@ -73,8 +67,6 @@ export class Permission {
     if (!roles.some(role => Object.values(UserRole).includes(role))) {
       throw new Error('Should has a valid role');
     }
-
-    this.roles = [...roles];
   }
 
   private static validatePath(path: Routes): void {
@@ -85,7 +77,5 @@ export class Permission {
     if (!Object.values(Routes).includes(path)) {
       throw new Error('Should have a valid path');
     }
-
-    this.path = path;
   }
 }
