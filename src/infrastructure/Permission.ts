@@ -2,8 +2,8 @@ import { Method, UserPermission, UserRole } from './permissions';
 import { Routes } from './routes';
 
 export class Permission {
+  private static permissionName: string;
   constructor(
-    readonly name: string,
     readonly path: Routes,
     readonly methods: Method[],
     private readonly roles: UserRole[],
@@ -11,9 +11,12 @@ export class Permission {
   ) {}
 
   static create(name: string, permission: UserPermission): Permission {
+    this.permissionName = name;
     this.validate(permission);
-    return new Permission(name, permission.path, permission.methods, permission.roles, permission.bypassAuth);
+    return new Permission(permission.path, permission.methods, permission.roles, permission.bypassAuth);
   }
+
+  // TODO create static createFromRequest
 
   hasRole(role: UserRole): boolean {
     return this.roles.includes(role);
@@ -51,31 +54,31 @@ export class Permission {
 
   private static validateMethod(methods: Method[]): void {
     if (methods === undefined || methods.length === 0) {
-      throw new Error('Should contain at least one method');
+      throw new Error(`Permission: ${this.permissionName} should contain at least one method`);
     }
 
     if (!methods.some(m => Object.values(Method).includes(m))) {
-      throw new Error('Should contain a valid method');
+      throw new Error(`Permission: ${this.permissionName} should contain a valid method`);
     }
   }
 
   private static validateRole(roles: UserRole[]): void {
     if (roles.length === 0) {
-      throw new Error('Should contain at least one role');
+      throw new Error(`Permission: ${this.permissionName} should contain at least one role`);
     }
 
     if (!roles.some(role => Object.values(UserRole).includes(role))) {
-      throw new Error('Should has a valid role');
+      throw new Error(`Permission: ${this.permissionName} should has a valid role`);
     }
   }
 
   private static validatePath(path: Routes): void {
     if (!path) {
-      throw new Error('Should contain at least one path allowed');
+      throw new Error(`Permission: ${this.name} should contain at least one path allowed`);
     }
 
     if (!Object.values(Routes).includes(path)) {
-      throw new Error('Should have a valid path');
+      throw new Error(`Permission: ${this.name} should have a valid path`);
     }
   }
 }

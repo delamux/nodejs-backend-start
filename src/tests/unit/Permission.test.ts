@@ -7,19 +7,19 @@ describe('Permission test', () => {
   it('should throw an error when is not Role assigned ', () => {
     expect(() => {
       Permission.create('permission test', { roles: [] } as UserPermission);
-    }).toThrowError('Should contain at least one role');
+    }).toThrowError('Permission: permission test should contain at least one role');
   });
 
   it('Should  throw an error when is not a valid Role', () => {
     expect(() => {
       Permission.create('permission test', { roles: ['no-valid-role'] } as unknown as UserPermission);
-    }).toThrowError('Should has a valid role');
+    }).toThrowError('Permission: permission test should has a valid role');
   });
 
   it('Should  throw an error when is not Path assigned ', () => {
     expect(() => {
       Permission.create('permission test', { roles: [UserRole.USER] } as UserPermission);
-    }).toThrowError('Should contain at least one path allowed');
+    }).toThrowError('Permission: Permission should contain at least one path allowed');
   });
 
   it('Should  throw an error when is not valid Path ', () => {
@@ -28,7 +28,7 @@ describe('Permission test', () => {
         roles: [UserRole.USER],
         path: 'no-valid-path',
       } as unknown as UserPermission);
-    }).toThrowError('Should have a valid path');
+    }).toThrowError('Permission: Permission should have a valid path');
   });
 
   it('Should throw an error when hast not method', () => {
@@ -37,7 +37,7 @@ describe('Permission test', () => {
         roles: [UserRole.USER],
         path: Routes.status,
       } as unknown as UserPermission);
-    }).toThrowError('Should contain at least one method');
+    }).toThrowError('Permission: permission test should contain at least one method');
   });
 
   it('Should throw an error when method is not valid', () => {
@@ -47,7 +47,7 @@ describe('Permission test', () => {
         path: Routes.status,
         methods: ['no-valid-method'],
       } as unknown as UserPermission);
-    }).toThrowError('Should contain a valid method');
+    }).toThrowError('Permission: permission test should contain a valid method');
   });
 
   it('Add Roles to permission and should has permission for that role', () => {
